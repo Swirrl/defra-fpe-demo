@@ -1,17 +1,24 @@
 import * as React from "react";
+import { useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { Map, Source, Layer, NavigationControl } from "react-map-gl";
+import LayersPanel from "./LayersPanel";
 
 // Needed for production build:
 // https://github.com/visgl/react-map-gl/issues/1266#issuecomment-753686953
+// prettier-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-mapboxgl.workerClass =
-  require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
+mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 
 const measureScaleArea = require("./geojson/measure-scale-area.json");
 const measures = require("./geojson/measures.json");
 
 function App() {
+  const [layerVisibilities, setLayerVisibilities] = useState({
+    measureScaleArea: "visible",
+    measures: "visible",
+  });
+
   return (
     <>
       <Map
@@ -29,7 +36,11 @@ function App() {
             id="measureScaleBorders"
             source="measureScale"
             type="line"
-            layout={{ "line-cap": "round", "line-join": "round" }}
+            layout={{
+              "line-cap": "round",
+              "line-join": "round",
+              visibility: layerVisibilities.measureScaleArea,
+            }}
             paint={{
               "line-width": 3,
               "line-dasharray": [0.1, 2],
@@ -41,7 +52,11 @@ function App() {
             id="measures"
             source="measuresBorders"
             type="line"
-            layout={{ "line-cap": "round", "line-join": "round" }}
+            layout={{
+              "line-cap": "round",
+              "line-join": "round",
+              visibility: layerVisibilities.measures,
+            }}
             paint={{
               "line-width": 4,
             }}
@@ -49,6 +64,10 @@ function App() {
         </Source>
         <NavigationControl />
       </Map>
+      <LayersPanel
+        layerVisibilities={layerVisibilities}
+        setVisibilities={setLayerVisibilities}
+      />
     </>
   );
 }
