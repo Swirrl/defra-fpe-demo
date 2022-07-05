@@ -1,13 +1,95 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #0b0c0c;
+  font-family:'Helvetica Neue', Arial, sans-serif;
+  overflow-wrap:break-word;
+  word-wrap:break-word;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+  color: #c7254e;
+
+}
+
+/* HOVER LIST */
+.hover-list:hover, .hover-list:hover * {
+  background: #1d70b8;
+  color: #fff;
+}
+
+/* LINKS */
+a {
+  color: #1d70b8;
+  text-decoration:underline;
+}
+a:hover {
+  color: #003078;
+}
+a:focus {
+  background-color: #ffdd00!important;
+  color: #0b0c0c!important;
+  outline: 3px solid transparent;
+  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+  text-decoration: none;
+}
+a.text-white:hover {
+  color: #cbd3da!important;
+}
+a.text-white:focus {
+  color: #0b0c0c!important;
+}
+
+/* LIST LINKS */
+.list-links-container {
+  border-top: 1px solid #cbd3da;
+  margin-top: 0rem;
+  margin-bottom: 3rem;
+  padding-left: 0;
+  list-style: none;
+}
+.list-links-item {
+  border-bottom: 1px solid #cbd3da;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.list-links-item-heading {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+.list-links-item-link {
+  font-weight: bold;
+}
+.list-links-item-nested-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+/* LIST ATTRIBUTES */
+.list-attributes {
+  border-top: 1px solid #cbd3da;
+  border-right: 1px solid #cbd3da;
+  border-left: 1px solid #cbd3da;
+  margin-top: 0rem;
+  margin-bottom: 3rem;
+}
+.list-attributes-item {
+  border-bottom: 1px solid #cbd3da;
+}
+.list-attributes-item-label,
+.list-attributes-item-description {
+  padding: 0.75rem;
+
+}
+.list-attributes-item-label {
+  font-weight: bold;
+  border-right: 1px solid #cbd3da;
+}
+
+.measures-list {
+  margin: 1rem 0 0 1rem;
 }

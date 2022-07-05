@@ -3,6 +3,7 @@ import { useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { Map, Source, Layer, NavigationControl } from "react-map-gl";
 import LayersPanel from "./LayersPanel";
+import MeasureList from "./MeasuresList";
 
 // Needed for production build:
 // https://github.com/visgl/react-map-gl/issues/1266#issuecomment-753686953
@@ -20,13 +21,17 @@ function App() {
   });
 
   return (
-    <>
+    <div className="row">
+      <div className="measures-list col">
+        <MeasureList />
+      </div>
+      <div className="map col" style={{height: '100vh'}} >
       <Map
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         initialViewState={{
-          longitude: -2.6,
-          latitude: 53,
-          zoom: 5.1,
+            longitude: 0.13,
+            latitude: 51.53,
+            zoom: 8,
         }}
         style={{ height: "100vh" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
@@ -68,7 +73,8 @@ function App() {
         layerVisibilities={layerVisibilities}
         setVisibilities={setLayerVisibilities}
       />
-    </>
+      </div>
+    </div>
   );
 }
 
