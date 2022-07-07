@@ -119,7 +119,8 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.localAuthority }}
               paint={{
-                "fill-opacity": 0
+                "fill-color": "#D35FB7",
+                "fill-opacity": 0.3
               }}
             />
             <Layer
@@ -129,7 +130,7 @@ function App() {
               layout={{ visibility: layerVisibilities.localAuthority }}
               paint={{
                 "fill-color": "#D35FB7",
-                "fill-opacity": 0.3
+                "fill-opacity": 0.5
               }}
               filter={filter}
             />
