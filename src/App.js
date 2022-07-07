@@ -45,14 +45,14 @@ function App() {
     }
   }
 
-  const onHover = (features) => {
+  const debouncedOnHover = useCallback(debounce(
+    (features) => {
     if (features.length > 0) {
       setHoverInfo({features});
     } else {
       setHoverInfo(null)
     }}
-
-  const optimisedOnHover = debounce(onHover)
+  ), [])
 
   const onClick = useCallback((event) => {
     if (event.features.length > 0) {
@@ -69,10 +69,13 @@ function App() {
   
   const hoverLeave = useCallback(() => {
     setHoverListInfo(null)
-  })
-  const selectedFeatures = hoverListInfo || (clickInfo && clickInfo.features) || (hoverInfo && hoverInfo.features) || []
-  let filter = useMemo(() => ['in', ['get', 'uri'], ['literal', selectedFeatures.map(feature => (feature.properties.uri) || '')]])
+  }, [])
 
+  const filter = useMemo(() => {
+  const selectedFeatures = hoverListInfo || (clickInfo && clickInfo.features) || (hoverInfo && hoverInfo.features) || []
+    return ['in', ['get', 'uri'], ['literal', selectedFeatures.map(feature => (feature.properties.uri) || '')]
+    ]
+  }, [hoverListInfo, clickInfo, hoverInfo])
 
   return (
     <div className="row">
@@ -89,7 +92,7 @@ function App() {
           }}
           mapStyle="mapbox://styles/mapbox/streets-v11"
           interactiveLayerIds={["measureScaleBlank", "measuresBlank"]}
-          onMouseMove={event => optimisedOnHover(event.features)}
+          onMouseMove={event => debouncedOnHover(event.features)}
           height="200px"
           onClick={onClick}
         >
