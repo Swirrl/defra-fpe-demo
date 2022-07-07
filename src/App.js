@@ -14,17 +14,17 @@ mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 const measureScaleArea = require("./geojson/measure-scale-area.json");
 const measures = require("./geojson/measures.json");
 
-const LinkOrLabel = ({feature}) => {
-      if (feature.properties['feature-url']) {
-        return (<a id={feature.properties.uri} href={"https://environment.data.gov.uk" + feature.properties['feature-url']} >
-          {feature.properties.label}
-        </a>)
-      } else {
-        return (
-          feature.properties.label
-        )
-      }
-    } 
+const LinkOrLabel = ({ feature }) => {
+  if (feature.properties['feature-url']) {
+    return (<a id={feature.properties.uri} href={"https://environment.data.gov.uk" + feature.properties['feature-url']} >
+      {feature.properties.label}
+    </a>)
+  } else {
+    return (
+      feature.properties.label
+    )
+  }
+}
 
 function App() {
   const [hoverInfo, setHoverInfo] = useState(null);
@@ -35,11 +35,11 @@ function App() {
     measures: "visible",
   });
 
-  function debounce(cb, delay = 100){
+  function debounce(cb, delay = 100) {
     let timeout
     return (...args) => {
       clearTimeout(timeout)
-      timeout = setTimeout(() =>{
+      timeout = setTimeout(() => {
         cb(...args)
       }, delay)
     }
@@ -47,32 +47,33 @@ function App() {
 
   const debouncedOnHover = useCallback(debounce(
     (features) => {
-    if (features.length > 0) {
-      setHoverInfo({features});
-    } else {
-      setHoverInfo(null)
-    }}
+      if (features.length > 0) {
+        setHoverInfo({ features });
+      } else {
+        setHoverInfo(null)
+      }
+    }
   ), [])
 
   const onClick = useCallback((event) => {
     if (event.features.length > 0) {
-      setClickInfo({features: event.features})
+      setClickInfo({ features: event.features })
     } else {
       setClickInfo(null)
     }
   }, [])
 
   const hoverList = useCallback((event) => {
-    const selectedFeature = {uri: event.target.getAttribute("id")}
-    setHoverListInfo([{properties: selectedFeature}])
+    const selectedFeature = { uri: event.target.getAttribute("id") }
+    setHoverListInfo([{ properties: selectedFeature }])
   })
-  
+
   const hoverLeave = useCallback(() => {
     setHoverListInfo(null)
   }, [])
 
   const filter = useMemo(() => {
-  const selectedFeatures = hoverListInfo || (clickInfo && clickInfo.features) || (hoverInfo && hoverInfo.features) || []
+    const selectedFeatures = hoverListInfo || (clickInfo && clickInfo.features) || (hoverInfo && hoverInfo.features) || []
     return ['in', ['get', 'uri'], ['literal', selectedFeatures.map(feature => (feature.properties.uri) || '')]
     ]
   }, [hoverListInfo, clickInfo, hoverInfo])
@@ -82,7 +83,7 @@ function App() {
       <div className="measures-list col">
         <MeasureList />
       </div>
-      <div className="map col" style={{height: '100vh'}} >
+      <div className="map col" style={{ height: '100vh' }} >
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           initialViewState={{
@@ -90,7 +91,7 @@ function App() {
             latitude: 51.53,
             zoom: 8,
           }}
-          mapStyle="mapbox://styles/mapbox/streets-v11"
+          mapStyle="mapbox://styles/mapbox/outdoors-v11"
           interactiveLayerIds={["measureScaleBlank", "measuresBlank"]}
           onMouseMove={event => debouncedOnHover(event.features)}
           height="200px"
@@ -109,6 +110,7 @@ function App() {
               paint={{
                 "line-width": 3,
                 "line-dasharray": [0.1, 2],
+                "line-color": "#D35FB7"
               }}
             />
             <Layer
@@ -126,7 +128,7 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.localAuthority }}
               paint={{
-                "fill-color": "black",
+                "fill-color": "#D35FB7",
                 "fill-opacity": 0.3
               }}
               filter={filter}
@@ -162,7 +164,7 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.measures }}
               paint={{
-                "fill-color": "black",
+                "fill-color": "#2E2E2E",
                 "fill-opacity": 0.3
               }}
               filter={filter}
@@ -182,10 +184,10 @@ function App() {
                 paddingBottom: '1rem'
               }}
             >
-              <ul style={{padding: '0.5rem'}}>
+              <ul style={{ padding: '0.5rem' }}>
                 {(clickInfo || hoverInfo).features.map((feature) => (
-                  <li className="hover-list" style={{listStyle: 'none', paddingBottom: '0.5rem'}} id={feature.properties.uri} onMouseMove={hoverList} onMouseLeave={hoverLeave}>
-                      <LinkOrLabel feature={feature} />
+                  <li className="hover-list" style={{ listStyle: 'none', paddingBottom: '0.5rem' }} id={feature.properties.uri} onMouseMove={hoverList} onMouseLeave={hoverLeave}>
+                    <LinkOrLabel feature={feature} />
                   </li>
                 ))}
               </ul>
