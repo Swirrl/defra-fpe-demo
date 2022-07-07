@@ -110,7 +110,7 @@ function App() {
               paint={{
                 "line-width": 3,
                 "line-dasharray": [0.1, 2],
-                "line-color": "#D35FB7"
+                "line-color": "red"
               }}
             />
             <Layer
@@ -119,7 +119,7 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.localAuthority }}
               paint={{
-                "fill-color": "#D35FB7",
+                "fill-color": "red",
                 "fill-opacity": 0.3
               }}
             />
@@ -129,8 +129,8 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.localAuthority }}
               paint={{
-                "fill-color": "#D35FB7",
-                "fill-opacity": 0.5
+                "fill-color": "red",
+                "fill-opacity": 0.35
               }}
               filter={filter}
             />
@@ -146,7 +146,7 @@ function App() {
                 visibility: layerVisibilities.measures,
               }}
               paint={{
-                "line-width": 4,
+                "line-width": 2,
                 "line-color": "#2E2E2E"
               }}
             />
@@ -166,7 +166,7 @@ function App() {
               layout={{ visibility: layerVisibilities.measures }}
               paint={{
                 "fill-color": "#2E2E2E",
-                "fill-opacity": 0.3
+                "fill-opacity": 0.2
               }}
               filter={filter}
             />
