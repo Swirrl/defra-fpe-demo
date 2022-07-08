@@ -1,9 +1,10 @@
-import * as React from "react";
 import { useState, useCallback, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import { Map, Source, Layer, NavigationControl } from "react-map-gl";
 import LayersPanel from "./LayersPanel";
 import MeasureList from "./components/MeasuresList";
+import { debounce } from "./utils";
+import FeaturesList from "./components/FeaturesList";
 
 // Needed for production build:
 // https://github.com/visgl/react-map-gl/issues/1266#issuecomment-753686953
@@ -14,76 +15,46 @@ mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 const measureScaleArea = require("./geojson/measure-scale-area.json");
 const measures = require("./geojson/measures.json");
 
-const LinkOrLabel = ({ feature }) => {
-  if (feature.properties['feature-url']) {
-    return (<a id={feature.properties.uri} href={"https://environment.data.gov.uk" + feature.properties['feature-url']} >
-      {feature.properties.label}
-    </a>)
-  } else {
-    return (
-      feature.properties.label
-    )
-  }
-}
-
 function App() {
-  const [hoverInfo, setHoverInfo] = useState(null);
-  const [clickInfo, setClickInfo] = useState(null);
-  const [hoverListInfo, setHoverListInfo] = useState(null);
   const [layerVisibilities, setLayerVisibilities] = useState({
     localAuthority: "visible",
     measures: "visible",
   });
-
-  function debounce(cb, delay = 100) {
-    let timeout
-    return (...args) => {
-      clearTimeout(timeout)
-      timeout = setTimeout(() => {
-        cb(...args)
-      }, delay)
-    }
-  }
+  const [hoveredFeatures, setHoveredFeatures] = useState(null);
+  const [clickedFeatures, setClickedFeatures] = useState(null);
+  const [hoveredListFeature, setHoveredListFeature] = useState(null);
 
   const debouncedOnHover = useCallback(debounce(
     (features) => {
       if (features.length > 0) {
-        setHoverInfo({ features });
+        setHoveredFeatures(features);
       } else {
-        setHoverInfo(null)
+        setHoveredFeatures(null)
       }
     }
   ), [])
 
-  const onClick = useCallback((event) => {
-    if (event.features.length > 0) {
-      setClickInfo({ features: event.features })
+  const onClick = useCallback((features) => {
+    if (features.length > 0) {
+      setClickedFeatures(features)
     } else {
-      setClickInfo(null)
+      setClickedFeatures(null)
     }
   }, [])
 
-  const hoverList = useCallback((event) => {
-    const selectedFeature = { uri: event.target.getAttribute("id") }
-    setHoverListInfo([{ properties: selectedFeature }])
-  })
-
-  const hoverLeave = useCallback(() => {
-    setHoverListInfo(null)
-  }, [])
-
   const filter = useMemo(() => {
-    const selectedFeatures = hoverListInfo || (clickInfo && clickInfo.features) || (hoverInfo && hoverInfo.features) || []
-    return ['in', ['get', 'uri'], ['literal', selectedFeatures.map(feature => (feature.properties.uri) || '')]
-    ]
-  }, [hoverListInfo, clickInfo, hoverInfo])
+    const selectedFeatures = hoveredListFeature || clickedFeatures || hoveredFeatures || []
+    return ['in', ['get', 'uri'], ['literal', selectedFeatures.map(feature => (feature.properties.uri) || '')]]
+  }, [hoveredListFeature, clickedFeatures, hoveredFeatures])
+
+  const isMapFeatureSelected = clickedFeatures?.length > 0 || hoveredFeatures?.length > 0
 
   return (
     <div className="row">
       <div className="measures-list col">
         <MeasureList />
       </div>
-      <div className="map col" style={{ height: '100vh' }} >
+      <div className="map col">
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           initialViewState={{
@@ -95,7 +66,7 @@ function App() {
           interactiveLayerIds={["measureScaleBlank", "measuresBlank"]}
           onMouseMove={event => debouncedOnHover(event.features)}
           height="200px"
-          onClick={onClick}
+          onClick={event => onClick(event.features)}
         >
           <Source id="measureScale" type="geojson" data={measureScaleArea} generateId={true}>
             <Layer
@@ -166,34 +137,13 @@ function App() {
               layout={{ visibility: layerVisibilities.measures }}
               paint={{
                 "fill-color": "#2E2E2E",
-                "fill-opacity": 0.2
+                "fill-opacity": 0.25
               }}
               filter={filter}
             />
           </Source>
           <NavigationControl />
-          {((clickInfo && clickInfo.features.length > 0) || (hoverInfo && hoverInfo.features.length > 0)) && (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                height: "30%",
-                width: "100%",
-                overflow: 'auto',
-                background: "#fff",
-                fontSize: '1rem',
-                paddingBottom: '1rem'
-              }}
-            >
-              <ul style={{ padding: '0.5rem' }}>
-                {(clickInfo || hoverInfo).features.map((feature) => (
-                  <li className="hover-list" style={{ listStyle: 'none', paddingBottom: '0.5rem' }} id={feature.properties.uri} onMouseMove={hoverList} onMouseLeave={hoverLeave}>
-                    <LinkOrLabel feature={feature} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setSelectedFeature={setHoveredListFeature} />}
         </Map>
         <LayersPanel
           layerVisibilities={layerVisibilities}
