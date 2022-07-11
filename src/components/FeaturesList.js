@@ -14,19 +14,24 @@ const LinkOrLabel = ({ feature }) => {
   }
 }
 
-export default function FeaturesList({ features, setSelectedFeature }) {
+export default function FeaturesList({ features, setHoveredListFeature, unsetFns }) {
 
   const onHover = useCallback((event) => {
     const selectedFeature = { uri: event.target.getAttribute("id") }
-    setSelectedFeature([{ properties: selectedFeature }])
-  }, [setSelectedFeature])
+    setHoveredListFeature([{ properties: selectedFeature }])
+  }, [setHoveredListFeature])
 
   const onLeave = useCallback(() => {
-    setSelectedFeature(null)
-  }, [setSelectedFeature])
+    setHoveredListFeature(null)
+  }, [setHoveredListFeature])
+
+  const onClose = useCallback(() => {
+    unsetFns.forEach(fn => fn(null))
+  }, [])
 
   return (
     <div className="features-list">
+      <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
       <ul>
         {features.map((feature) => (
           <li className="features-list-item" id={feature.properties.uri} onMouseMove={onHover} onMouseLeave={onLeave}>

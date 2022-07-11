@@ -31,8 +31,12 @@ code {
   padding-bottom: 1rem;
 }
 
+.btn-close {
+  float: right;
+  padding-right: 1.5rem;
+}
 .features-list > ul {
-  padding: 0.5rem;
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
 }
 .features-list-item {
   list-style: none;

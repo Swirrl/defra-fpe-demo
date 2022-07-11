@@ -68,8 +68,8 @@ function App() {
           }}
           mapStyle="mapbox://styles/mapbox/outdoors-v11"
           interactiveLayerIds={["measureScaleBlank", "measuresBlank"]}
-          onMouseMove={event => debouncedOnHover(event.features)}
           height="200px"
+          onMouseMove={event => debouncedOnHover(event.features)}
           onClick={event => onClick(event.features)}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
@@ -150,7 +150,7 @@ function App() {
             />
           </Source>
           <NavigationControl />
-          {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setSelectedFeature={setHoveredListFeature} />}
+          {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
         </Map>
         <LayersPanel
           layerVisibilities={layerVisibilities}
