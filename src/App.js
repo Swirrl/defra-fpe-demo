@@ -20,10 +20,14 @@ function App() {
     localAuthority: "visible",
     measures: "visible",
   });
+  const [cursor, setCursor] = useState('grab');
   const [hoveredFeatures, setHoveredFeatures] = useState(null);
   const [clickedFeatures, setClickedFeatures] = useState(null);
   const [hoveredListFeature, setHoveredListFeature] = useState(null);
 
+  const onMouseEnter = useCallback(() => setCursor('pointer'), []);
+  const onMouseLeave = useCallback(() => setCursor('grab'), []);
+  
   const debouncedOnHover = useCallback(debounce(
     (features) => {
       if (features.length > 0) {
@@ -67,6 +71,9 @@ function App() {
           onMouseMove={event => debouncedOnHover(event.features)}
           height="200px"
           onClick={event => onClick(event.features)}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          cursor={cursor}
         >
           <Source id="measureScale" type="geojson" data={measureScaleArea} generateId={true}>
             <Layer
