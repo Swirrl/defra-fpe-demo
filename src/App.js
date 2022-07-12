@@ -14,6 +14,7 @@ mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 
 const measureScaleArea = require("./geojson/measure-scale-area.json");
 const measures = require("./geojson/measures.json");
+const outOfBounds = require("./geojson/suffolk.json")
 
 function App() {
   const [layerVisibilities, setLayerVisibilities] = useState({
@@ -25,12 +26,23 @@ function App() {
   const [clickedFeatures, setClickedFeatures] = useState(null);
   const [hoveredListFeature, setHoveredListFeature] = useState(null);
 
-  const onMouseEnter = useCallback(() => setCursor('pointer'), []);
+  const areFeaturesOutOfBounds = (features) => (
+    features.find(feature => feature.source === 'outOfBounds')
+  )
+
+  const onMouseEnter = useCallback((event) => {
+    if (areFeaturesOutOfBounds(event.features)) {
+      setCursor('not-allowed')
+    } else {
+      setCursor('pointer')
+    }
+  }, []
+  );
   const onMouseLeave = useCallback(() => setCursor('grab'), []);
   
   const debouncedOnHover = useCallback(debounce(
     (features) => {
-      if (features.length > 0) {
+      if (features.length > 0 && !areFeaturesOutOfBounds(features)) {
         setHoveredFeatures(features);
       } else {
         setHoveredFeatures(null)
@@ -39,7 +51,7 @@ function App() {
   ), [])
 
   const onClick = useCallback((features) => {
-    if (features.length > 0) {
+    if (features.length > 0 && !areFeaturesOutOfBounds(features)) {
       setClickedFeatures(features)
     } else {
       setClickedFeatures(null)
@@ -62,12 +74,12 @@ function App() {
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           initialViewState={{
-            longitude: 0.13,
-            latitude: 51.53,
-            zoom: 8,
+            longitude: 0.5,
+            latitude: 52,
+            zoom: 7.5,
           }}
           mapStyle="mapbox://styles/mapbox/outdoors-v11"
-          interactiveLayerIds={["measureScaleBlank", "measuresBlank"]}
+          interactiveLayerIds={["measureScaleBlank", "measuresBlank", "outOfBounds"]}
           height="200px"
           onMouseMove={event => debouncedOnHover(event.features)}
           onClick={event => onClick(event.features)}
@@ -149,6 +161,17 @@ function App() {
               filter={filter}
             />
           </Source>
+          <Source id="outOfBounds" type="geojson" data={outOfBounds} generateId={true}>
+            <Layer
+              id="outOfBounds"
+              source="outOfBounds"
+              type="fill"
+              paint={{
+                "fill-color": "grey",
+                "fill-opacity": 0.5
+              }}
+            />
+            </Source>
           <NavigationControl />
           {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
         </Map>
