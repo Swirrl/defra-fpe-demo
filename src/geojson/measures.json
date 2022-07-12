@@ -48522,6 +48522,108 @@
         "uri": "http://environment.data.gov.uk/flood-risk-planning/data/measure/0209606012",
         "feature-url": "/flood-planning/explorer/cycle-2/measure?uri=http%3A%2F%2Fenvironment.data.gov.uk%2Fflood-risk-planning%2Fdata%2Fmeasure%2F0209606012"
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.10711669921875,
+          51.49634719159713
+        ]
+      },
+      "properties": {
+        "label": "Point Demo 1",
+        "uri": "#",
+        "feature-url": "/flood-planning/explorer/cycle-2/#"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.064544677734375,
+          51.4398847487041
+        ]
+      },
+      "properties": {
+        "label": "Point Demo 2",
+        "uri": "#",
+        "feature-url": "/flood-planning/explorer/cycle-2/#"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.09613037109375,
+          51.48907943293123
+        ]
+      },
+      "properties": {
+        "label": "Point Demo 3",
+        "uri": "#",
+        "feature-url": "/flood-planning/explorer/cycle-2/#"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.0803375244140625,
+          51.56255861691012
+        ]
+      },
+      "properties": {
+        "label": "Point Demo 4",
+        "uri": "#",
+        "feature-url": "/flood-planning/explorer/cycle-2/#"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.22384643554687497,
+          51.5100245354003
+        ]
+      },
+      "properties": {
+        "label": "Point Demo 5",
+        "uri": "#",
+        "feature-url": "/flood-planning/explorer/cycle-2/#"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [ [
+          -0.1696014404296875,
+          51.44373668041614
+        ], [
+          -0.152435302734375,
+          51.43902871975925
+        ], [
+          -0.1668548583984375,
+          51.436888577204996
+        ] ]
+      },
+      "properties": {
+        "label": "Multi-Point Demo",
+        "uri": "#",
+        "feature-url": "/flood-planning/explorer/cycle-2/#"
+      }
     }
   ],
   "visible?": true,
