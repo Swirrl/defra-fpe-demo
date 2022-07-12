@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
-import { Map, Source, Layer, NavigationControl } from "react-map-gl";
+import { Map, Source, Layer, NavigationControl, Marker } from "react-map-gl";
 import LayersPanel from "./LayersPanel";
 import MeasureList from "./components/MeasuresList";
 import { debounce } from "./utils";
@@ -14,6 +14,7 @@ mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 
 const measureScaleArea = require("./geojson/measure-scale-area.json");
 const measures = require("./geojson/measures.json");
+const measuresPoints = require("./geojson/measures-points.json")
 const outOfBounds = require("./geojson/suffolk.json")
 
 function App() {
@@ -65,6 +66,32 @@ function App() {
 
   const isMapFeatureSelected = clickedFeatures?.length > 0 || hoveredFeatures?.length > 0
 
+  const Pins = useMemo(() =>
+    measuresPoints.map((measure, index) => {
+
+      if (Array.isArray(measure.geometry.coordinates[0])) {
+        return measure.geometry.coordinates.map((coords, nestedIndex) => {
+          return <Marker
+            key={`marker-${index}-${nestedIndex}`}
+            longitude={coords[0]}
+            latitude={coords[1]}
+            anchor={'bottom'}>
+            <img src={require('./pin-png.png')} height={"30px"} />
+          </Marker>
+        })
+
+      } else {
+        return <Marker
+          key={`marker-${index}`}
+          longitude={measure.geometry.coordinates[0]}
+          latitude={measure.geometry.coordinates[1]}
+          anchor={'bottom'}>
+          <img src={require('./pin-png.png')} height={'30px'} />
+        </Marker>
+      }
+    }
+    ))
+
   return (
     <div className="row">
       <div className="measures-list col">
@@ -79,7 +106,7 @@ function App() {
             zoom: 7.5,
           }}
           mapStyle="mapbox://styles/mapbox/outdoors-v11"
-          interactiveLayerIds={["measureScaleBlank", "measuresBlank", "measuresPoints", "outOfBounds"]}
+          interactiveLayerIds={["measureScaleBlank", "measuresBlank", "outOfBounds"]}
           height="200px"
           onMouseMove={event => debouncedOnHover(event.features)}
           onClick={event => onClick(event.features)}
@@ -161,20 +188,6 @@ function App() {
               }}
               filter={filter}
             />
-            <Layer
-              id="measuresPoints"
-              source="measures"
-              type="circle"
-              layout={{ visibility: layerVisibilities.measures }}
-              paint={{
-                "circle-radius": 4,
-                "circle-color": "white",
-                "circle-stroke-color": "black",
-                "circle-stroke-width": 2,
-
-              }}
-              filter={['==', ['geometry-type'], 'Point']}
-            />
           </Source>
           <Source id="outOfBounds" type="geojson" data={outOfBounds} generateId={true}>
             <Layer
@@ -187,6 +200,7 @@ function App() {
               }}
             />
             </Source>
+            {Pins}
           <NavigationControl />
           {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
         </Map>
