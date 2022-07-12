@@ -79,7 +79,7 @@ function App() {
             zoom: 7.5,
           }}
           mapStyle="mapbox://styles/mapbox/outdoors-v11"
-          interactiveLayerIds={["measureScaleBlank", "measuresBlank", "outOfBounds"]}
+          interactiveLayerIds={["measureScaleBlank", "measuresBlank", "measuresPoints", "outOfBounds"]}
           height="200px"
           onMouseMove={event => debouncedOnHover(event.features)}
           onClick={event => onClick(event.features)}
@@ -148,6 +148,7 @@ function App() {
               paint={{
                 "fill-opacity": 0
               }}
+              filter={['==', ['geometry-type'], 'Polygon']}
             />
             <Layer
               id="measuresFills"
@@ -159,6 +160,20 @@ function App() {
                 "fill-opacity": 0.25
               }}
               filter={filter}
+            />
+            <Layer
+              id="measuresPoints"
+              source="measures"
+              type="circle"
+              layout={{ visibility: layerVisibilities.measures }}
+              paint={{
+                "circle-radius": 4,
+                "circle-color": "white",
+                "circle-stroke-color": "black",
+                "circle-stroke-width": 2,
+
+              }}
+              filter={['==', ['geometry-type'], 'Point']}
             />
           </Source>
           <Source id="outOfBounds" type="geojson" data={outOfBounds} generateId={true}>
