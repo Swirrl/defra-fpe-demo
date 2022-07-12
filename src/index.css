@@ -37,8 +37,7 @@ code {
 
 .legend-localAuthority-color {
   background-color: rgba(255, 0, 0, 0.3);
-  border-color: red;
-  border-style: dashed;
+  border: 0.1rem red dashed;
 }
 
 .legend-measures-color {
