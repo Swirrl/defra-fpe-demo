@@ -1,9 +1,10 @@
-import * as React from "react";
 import { useState, useCallback, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import { Map, Source, Layer, NavigationControl } from "react-map-gl";
 import LayersPanel from "./LayersPanel";
 import MeasureList from "./components/MeasuresList";
+import { debounce } from "./utils";
+import FeaturesList from "./components/FeaturesList";
 
 // Needed for production build:
 // https://github.com/visgl/react-map-gl/issues/1266#issuecomment-753686953
@@ -13,88 +14,78 @@ mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 
 const measureScaleArea = require("./geojson/measure-scale-area.json");
 const measures = require("./geojson/measures.json");
-
-const LinkOrLabel = ({feature}) => {
-      if (feature.properties['feature-url']) {
-        return (<a id={feature.properties.uri} href={"https://environment.data.gov.uk" + feature.properties['feature-url']} >
-          {feature.properties.label}
-        </a>)
-      } else {
-        return (
-          feature.properties.label
-        )
-      }
-    } 
+const outOfBounds = require("./geojson/suffolk.json")
 
 function App() {
-  const [hoverInfo, setHoverInfo] = useState(null);
-  const [clickInfo, setClickInfo] = useState(null);
-  const [hoverListInfo, setHoverListInfo] = useState(null);
   const [layerVisibilities, setLayerVisibilities] = useState({
     localAuthority: "visible",
     measures: "visible",
   });
+  const [cursor, setCursor] = useState('grab');
+  const [hoveredFeatures, setHoveredFeatures] = useState(null);
+  const [clickedFeatures, setClickedFeatures] = useState(null);
+  const [hoveredListFeature, setHoveredListFeature] = useState(null);
 
-  function debounce(cb, delay = 100){
-    let timeout
-    return (...args) => {
-      clearTimeout(timeout)
-      timeout = setTimeout(() =>{
-        cb(...args)
-      }, delay)
+  const areFeaturesOutOfBounds = (features) => (
+    features.find(feature => feature.source === 'outOfBounds')
+  )
+
+  const onMouseEnter = useCallback((event) => {
+    if (areFeaturesOutOfBounds(event.features)) {
+      setCursor('not-allowed')
+    } else {
+      setCursor('pointer')
     }
-  }
-
+  }, []
+  );
+  const onMouseLeave = useCallback(() => setCursor('grab'), []);
+  
   const debouncedOnHover = useCallback(debounce(
     (features) => {
-    if (features.length > 0) {
-      setHoverInfo({features});
-    } else {
-      setHoverInfo(null)
-    }}
+      if (features.length > 0 && !areFeaturesOutOfBounds(features)) {
+        setHoveredFeatures(features);
+      } else {
+        setHoveredFeatures(null)
+      }
+    }
   ), [])
 
-  const onClick = useCallback((event) => {
-    if (event.features.length > 0) {
-      setClickInfo({features: event.features})
+  const onClick = useCallback((features) => {
+    if (features.length > 0 && !areFeaturesOutOfBounds(features)) {
+      setClickedFeatures(features)
     } else {
-      setClickInfo(null)
+      setClickedFeatures(null)
     }
-  }, [])
-
-  const hoverList = useCallback((event) => {
-    const selectedFeature = {uri: event.target.getAttribute("id")}
-    setHoverListInfo([{properties: selectedFeature}])
-  })
-  
-  const hoverLeave = useCallback(() => {
-    setHoverListInfo(null)
   }, [])
 
   const filter = useMemo(() => {
-  const selectedFeatures = hoverListInfo || (clickInfo && clickInfo.features) || (hoverInfo && hoverInfo.features) || []
-    return ['in', ['get', 'uri'], ['literal', selectedFeatures.map(feature => (feature.properties.uri) || '')]
-    ]
-  }, [hoverListInfo, clickInfo, hoverInfo])
+    const selectedFeatures = hoveredListFeature || clickedFeatures || hoveredFeatures || []
+    return ['in', ['get', 'uri'], ['literal', selectedFeatures.map(feature => (feature.properties.uri) || '')]]
+  }, [hoveredListFeature, clickedFeatures, hoveredFeatures])
+
+  const isMapFeatureSelected = clickedFeatures?.length > 0 || hoveredFeatures?.length > 0
 
   return (
     <div className="row">
       <div className="measures-list col">
         <MeasureList />
       </div>
-      <div className="map col" style={{height: '100vh'}} >
+      <div className="map col">
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           initialViewState={{
-            longitude: 0.13,
-            latitude: 51.53,
-            zoom: 8,
+            longitude: 0.5,
+            latitude: 52,
+            zoom: 7.5,
           }}
-          mapStyle="mapbox://styles/mapbox/streets-v11"
-          interactiveLayerIds={["measureScaleBlank", "measuresBlank"]}
-          onMouseMove={event => debouncedOnHover(event.features)}
+          mapStyle="mapbox://styles/mapbox/outdoors-v11"
+          interactiveLayerIds={["measureScaleBlank", "measuresBlank", "measuresPoints", "outOfBounds"]}
           height="200px"
-          onClick={onClick}
+          onMouseMove={event => debouncedOnHover(event.features)}
+          onClick={event => onClick(event.features)}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          cursor={cursor}
         >
           <Source id="measureScale" type="geojson" data={measureScaleArea} generateId={true}>
             <Layer
@@ -109,6 +100,7 @@ function App() {
               paint={{
                 "line-width": 3,
                 "line-dasharray": [0.1, 2],
+                "line-color": "red"
               }}
             />
             <Layer
@@ -117,7 +109,8 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.localAuthority }}
               paint={{
-                "fill-opacity": 0
+                "fill-color": "red",
+                "fill-opacity": 0.3
               }}
             />
             <Layer
@@ -126,8 +119,8 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.localAuthority }}
               paint={{
-                "fill-color": "black",
-                "fill-opacity": 0.3
+                "fill-color": "red",
+                "fill-opacity": 0.35
               }}
               filter={filter}
             />
@@ -143,7 +136,7 @@ function App() {
                 visibility: layerVisibilities.measures,
               }}
               paint={{
-                "line-width": 4,
+                "line-width": 2,
                 "line-color": "#2E2E2E"
               }}
             />
@@ -155,6 +148,7 @@ function App() {
               paint={{
                 "fill-opacity": 0
               }}
+              filter={['==', ['geometry-type'], 'Polygon']}
             />
             <Layer
               id="measuresFills"
@@ -162,35 +156,39 @@ function App() {
               type="fill"
               layout={{ visibility: layerVisibilities.measures }}
               paint={{
-                "fill-color": "black",
-                "fill-opacity": 0.3
+                "fill-color": "#2E2E2E",
+                "fill-opacity": 0.25
               }}
               filter={filter}
             />
-          </Source>
-          <NavigationControl />
-          {((clickInfo && clickInfo.features.length > 0) || (hoverInfo && hoverInfo.features.length > 0)) && (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                height: "30%",
-                width: "100%",
-                overflow: 'auto',
-                background: "#fff",
-                fontSize: '1rem',
-                paddingBottom: '1rem'
+            <Layer
+              id="measuresPoints"
+              source="measures"
+              type="circle"
+              layout={{ visibility: layerVisibilities.measures }}
+              paint={{
+                "circle-radius": 4,
+                "circle-color": "white",
+                "circle-stroke-color": "black",
+                "circle-stroke-width": 2,
+
               }}
-            >
-              <ul style={{padding: '0.5rem'}}>
-                {(clickInfo || hoverInfo).features.map((feature) => (
-                  <li className="hover-list" style={{listStyle: 'none', paddingBottom: '0.5rem'}} id={feature.properties.uri} onMouseMove={hoverList} onMouseLeave={hoverLeave}>
-                      <LinkOrLabel feature={feature} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+              filter={['==', ['geometry-type'], 'Point']}
+            />
+          </Source>
+          <Source id="outOfBounds" type="geojson" data={outOfBounds} generateId={true}>
+            <Layer
+              id="outOfBounds"
+              source="outOfBounds"
+              type="fill"
+              paint={{
+                "fill-color": "grey",
+                "fill-opacity": 0.5
+              }}
+            />
+            </Source>
+          <NavigationControl />
+          {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
         </Map>
         <LayersPanel
           layerVisibilities={layerVisibilities}

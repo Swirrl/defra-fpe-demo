@@ -12,38 +12,78 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
   color: #c7254e;
-
 }
 
-/* HOVER LIST */
-.hover-list:hover, .hover-list:hover * {
+/* MAP */
+.map {
+  height: 100vh;
+}
+
+/* LAYERS PANEL*/
+.layers-panel {
+  position: absolute;
+  top: 0.5rem;
+  left: 52%;
+  padding: 0.5rem;
+  box-shadow: initial;
+  background-color: #fff;
+}
+
+.legend > span {
+  height: 1rem;
+  width: 1rem;
+  margin-right: 1rem;
+}
+
+.legend-localAuthority-color {
+  background-color: rgba(255, 0, 0, 0.3);
+  border: 0.1rem red dashed;
+}
+
+.legend-measures-color {
+  border-color: black;
+  border: solid;
+}
+
+.legend > label {
+  margin-right: 1rem;
+}
+
+/* FEATURES LIST */
+.features-list {
+  position: absolute;
+  bottom: 0;
+  height: 30%;
+  width: 100%;
+  overflow: auto;
+  background: #fff;
+  font-size: 1rem;
+  padding-bottom: 1rem;
+}
+
+.btn-close {
+  float: right;
+  padding-right: 1.5rem;
+}
+.features-list > ul {
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
+}
+.features-list-item {
+  list-style: none;
+  padding-bottom: 0.5rem;
+}
+
+.features-list-item:hover, .features-list-item:hover * {
   background: #1d70b8;
   color: #fff;
 }
 
-/* LINKS */
-a {
-  color: #1d70b8;
-  text-decoration:underline;
-}
-a:hover {
-  color: #003078;
-}
-a:focus {
-  background-color: #ffdd00!important;
-  color: #0b0c0c!important;
-  outline: 3px solid transparent;
-  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
-  text-decoration: none;
-}
-a.text-white:hover {
-  color: #cbd3da!important;
-}
-a.text-white:focus {
-  color: #0b0c0c!important;
+/* MEASURES LIST */
+.measures-list {
+  margin: 1rem 0 0 1rem;
 }
 
-/* LIST LINKS */
+/* MEASURES LIST LINKS */
 .list-links-container {
   border-top: 1px solid #cbd3da;
   margin-top: 0rem;
@@ -69,6 +109,29 @@ a.text-white:focus {
   list-style: none;
 }
 
+/* LINKS */
+a {
+  color: #1d70b8;
+  text-decoration:underline;
+}
+a:hover {
+  color: #003078;
+}
+
+a:focus {
+  background-color: #ffdd00!important;
+  color: #0b0c0c!important;
+  outline: 3px solid transparent;
+  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+  text-decoration: none;
+}
+a.text-white:hover {
+  color: #cbd3da!important;
+}
+a.text-white:focus {
+  color: #0b0c0c!important;
+}
+
 /* LIST ATTRIBUTES */
 .list-attributes {
   border-top: 1px solid #cbd3da;
@@ -88,8 +151,4 @@ a.text-white:focus {
 .list-attributes-item-label {
   font-weight: bold;
   border-right: 1px solid #cbd3da;
-}
-
-.measures-list {
-  margin: 1rem 0 0 1rem;
 }
