@@ -187,13 +187,8 @@ function App() {
               }}
             />
             </Source>
-          <NavigationControl />
-          {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
+          {isMapFeatureSelected && <FeaturesList clickedFeatures={clickedFeatures} hoveredFeatures={hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
         </Map>
-        <LayersPanel
-          layerVisibilities={layerVisibilities}
-          setVisibilities={setLayerVisibilities}
-        />
       </div>
     </div>
   );
