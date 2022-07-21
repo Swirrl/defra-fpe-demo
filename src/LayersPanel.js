@@ -10,7 +10,7 @@ export default function LayersPanel({ layerVisibilities, setVisibilities }) {
 
   return (
     <div
-      className="layers-panel">
+      className="layers-panel col-lg-5 col-xl-4">
       {Object.keys(layerVisibilities).map((layer) => (
         <div key={layer} className="legend d-flex justify-content-between align-items-center" >
           <span className={"legend-" + layer + "-color"} />
