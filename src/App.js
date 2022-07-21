@@ -183,17 +183,23 @@ function App() {
               type="fill"
               paint={{
                 "fill-color": "grey",
-                "fill-opacity": 0.5
+                "fill-opacity": 0.7
               }}
             />
-            </Source>
-          <NavigationControl />
-          {isMapFeatureSelected && <FeaturesList features={clickedFeatures || hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
+          </Source>
+          <div className="container">
+            <div className="map-row row">
+              <LayersPanel layerVisibilities={layerVisibilities} setVisibilities={setLayerVisibilities} />
+              <div className="map-help-text col-lg-6 col-xl-7">
+                1) Hover over an area to see a list of measures and / or measure scale area under your cursor.
+                <br/>
+                2) Click on the area you are interested in to make the list stick so you can select the measure you are interested in.
+              </div>
+              <NavigationControl showCompass={false} />
+            </div>
+          </div>
+          {isMapFeatureSelected && <FeaturesList clickedFeatures={clickedFeatures} hoveredFeatures={hoveredFeatures} setHoveredListFeature={setHoveredListFeature} unsetFns={[setHoveredFeatures, setClickedFeatures]}/>}
         </Map>
-        <LayersPanel
-          layerVisibilities={layerVisibilities}
-          setVisibilities={setLayerVisibilities}
-        />
       </div>
     </div>
   );
